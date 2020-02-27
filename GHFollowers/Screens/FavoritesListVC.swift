@@ -75,7 +75,17 @@ class FavoritesListVC: GFDataLoadingVC {
 }
 
 
-extension FavoritesListVC: UITableViewDataSource, UITableViewDelegate {
+extension FavoritesListVC: UITableViewDataSource, UITableViewDelegate, UserInfoVCDelegate {
+    
+    // Adding the UserInfoVC modal screen to each person in favorites so you now
+    // have the ability to either check their Github profile or check their followers
+    func didRequestFollowers(for username: String) {
+        let destVC = FollowerListVC(username: username)
+        dismiss(animated: true, completion: nil)
+        let navController = UINavigationController(rootViewController: destVC)
+        present(navController, animated: true)
+    }
+    // End modification
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return favorites.count
@@ -88,13 +98,25 @@ extension FavoritesListVC: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
+// Commented this original code out to be replaced by code below it
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        let favorite    = favorites[indexPath.row]
+//        let destVC      = FollowerListVC(username: favorite.login)
+//
+//        navigationController?.pushViewController(destVC, animated: true)
+//    }
+    
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let favorite    = favorites[indexPath.row]
-        let destVC      = FollowerListVC(username: favorite.login)
-
-        navigationController?.pushViewController(destVC, animated: true)
+        let destVC = UserInfoVC()
+      destVC.username     = favorite.login
+      destVC.delegate = self
+      let navController   = UINavigationController(rootViewController: destVC)
+      present(navController, animated: true)
     }
+    
+// End modification
  
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
